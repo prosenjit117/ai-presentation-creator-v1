@@ -1,0 +1,70 @@
+// Agent capabilities (v3): the agent is reused as a thin transport for its MCP +
+// Image Generation. The wizard sends an OVERRIDE NOTICE so the agent's baked
+// instructions/skills/Knowledge Retrieval do not affect output for this conversation.
+export const agentCapabilities = {
+  agentName: "AppDirect Presentation Creator and Designer",
+  modelId: "claude-opus-4-6",
+  usedAs: "MCP transport (wizard owns the operating spec via OVERRIDE NOTICE)",
+  tools: {
+    googleDriveMcp: {
+      selectedTools: [
+        "listFiles",
+        "getFileMetadata",
+        "deleteFile",
+        "exportFile",
+        "createDoc",
+        "updateDoc",
+        "createSheet",
+        "getSheetValues",
+        "updateSheetValues",
+        "createPresentation",
+        "getPresentation",
+        "updatePresentation",
+        "getPresentationPage",
+        "getPageThumbnail",
+      ],
+      updatePresentationRequestTypes: [
+        "createSlide",
+        "deleteObject",
+        "insertText",
+        "replaceAllText",
+        "createShape",
+        "createImage",
+        "createTable",
+        "updateTextStyle",
+        "updateShapeProperties",
+        "duplicateObject",
+      ],
+      createSlidePredefinedLayouts: [
+        "BLANK",
+        "CAPTION_ONLY",
+        "TITLE",
+        "TITLE_AND_BODY",
+        "TITLE_AND_TWO_COLUMNS",
+        "TITLE_ONLY",
+        "SECTION_HEADER",
+        "SECTION_TITLE_AND_DESCRIPTION",
+        "ONE_COLUMN_TEXT",
+        "MAIN_POINT",
+        "BIG_NUMBER",
+      ],
+      createShapeShapeTypes: ["TEXT_BOX", "RECTANGLE", "ROUND_RECTANGLE", "ELLIPSE"],
+      limits: [
+        "If a Reference Slides URL is provided, the agent calls getPresentation() on it and applies updatePresentation batchUpdate calls directly to that same deck — adding slides into the existing presentation. Otherwise the agent calls createPresentation (blank, 16:9).",
+        "No Drive-level 'duplicate file' / 'copy file' operation is exposed — the agent cannot fork a deck into a new file. It either edits the referenced deck in place or starts from a fresh createPresentation.",
+        "No updateParagraphStyle exposed — paragraph alignment must be approximated via shape positioning.",
+        "Default page size 9144000 x 5143500 EMU (16:9).",
+      ],
+    },
+    imageGeneration: {
+      modelId: "gemini-3-pro-image",
+      samples: 3,
+      aspectRatio: "4:3",
+      outputUsage: "Pass returned URL to updatePresentation -> createImage -> elementProperties.url",
+    },
+    knowledgeRetrieval: {
+      note: "Agent has Knowledge Retrieval enabled for the AppDirect Slides Template PDF, but the OVERRIDE NOTICE instructs the agent to ignore it for this conversation.",
+    },
+    sandbox: { enabled: true },
+  },
+} as const;
